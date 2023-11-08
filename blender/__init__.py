@@ -5,7 +5,7 @@ bl_info = {
     'blender': (3, 6, 0)
 }
  
-modulesNames = ['view', 'operator']
+modulesNames = ['view', 'operator', 'parser', 'data_manager']
  
 import sys
 import importlib
