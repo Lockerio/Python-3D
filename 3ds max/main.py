@@ -25,24 +25,19 @@ class My3dsMaxPlugin(QMainWindow):
         scene_objects = rt.objects
         data_list = [get_dimensions(obj) for obj in scene_objects]
 
-        # Фильтруем None, чтобы исключить объекты без размеров
         data_list = [data for data in data_list if data is not None]
 
-        # Создаем новую книгу Excel
         workbook = xlwt.Workbook()
         sheet = workbook.add_sheet('Sheet1')
 
-        # Записываем заголовки
         headers = ['Name', 'Length', 'Width', 'Height']
         for col_num, header in enumerate(headers):
             sheet.write(0, col_num, header)
 
-        # Записываем данные
         for row_num, data in enumerate(data_list, 1):
             for col_num, key in enumerate(headers):
                 sheet.write(row_num, col_num, data[key])
 
-        # Сохраняем книгу Excel
         workbook.save('output_xlwt.xls')
 
 

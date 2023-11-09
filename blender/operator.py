@@ -17,5 +17,6 @@ class AddonOperator(bpy.types.Operator):
             if parameters:
                 data[obj.name] = parameters
 
-        DataManager.save_objects_parameters_to_json(data, "1.json")
+        data = DataManager.format_dict(data)
+        DataManager.save_dict_to_excel(data, "output.xlsx")
         return {'FINISHED'}
