@@ -1,5 +1,5 @@
 import pymxs
-import xlwt
+import pandas as pd
 from PySide2.QtWidgets import QMainWindow, QPushButton, QVBoxLayout, QWidget
 from PySide2.QtCore import Slot
 from pymxs import runtime as rt
@@ -23,22 +23,10 @@ class My3dsMaxPlugin(QMainWindow):
     @Slot()
     def on_button_clicked(self):
         scene_objects = rt.objects
-        data_list = [get_dimensions(obj) for obj in scene_objects]
+        data= {get_dimensions(obj) for obj in scene_objects}
 
-        data_list = [data for data in data_list if data is not None]
-
-        workbook = xlwt.Workbook()
-        sheet = workbook.add_sheet('Sheet1')
-
-        headers = ['Name', 'Length', 'Width', 'Height']
-        for col_num, header in enumerate(headers):
-            sheet.write(0, col_num, header)
-
-        for row_num, data in enumerate(data_list, 1):
-            for col_num, key in enumerate(headers):
-                sheet.write(row_num, col_num, data[key])
-
-        workbook.save('output_xlwt.xls')
+        df = pd.DataFrame(data)
+        df.to_excel("output.xlsx", index_label="Название объекта")
 
 
 def get_dimensions(obj):
@@ -55,12 +43,35 @@ def get_dimensions(obj):
         height = abs(bounding_box.z)
 
         dimensions = {
-            'Длина': length,
-            'Ширина': width,
-            'Высота': height
+            obj.name: {
+                'Длина': length,
+                'Ширина': width,
+                'Высота': height
+            }
         }
 
         return dimensions
+    
+def format_dict(input_dict):
+        transformed_dict = {}
+
+        for key, value in input_dict.items():
+            cost = key.split(".")[0]
+
+            dimensions = f" {value['Длина']} x {value['Ширина']} x {value['Высота']}"
+            title = cost + dimensions
+
+            if title in transformed_dict:
+                transformed_dict[title]['Количество'] += 1
+            else:
+                transformed_dict[title] = {
+                    "Длина": value["Длина"],
+                    "Ширина": value["Ширина"],
+                    "Высота": value["Высота"],
+                    "Цена": cost,
+                    "Количество": 1
+                }
+        return transformed_dict
 
 
 plugin = My3dsMaxPlugin()
