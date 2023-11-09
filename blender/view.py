@@ -1,6 +1,7 @@
 import bpy
 from .operator import AddonOperator
 
+
 class AddonPanel(bpy.types.Panel):
     bl_label = "Get shape sizes"
     bl_idname = "PT_AddonPanel"
@@ -12,8 +13,3 @@ class AddonPanel(bpy.types.Panel):
         layout = self.layout
         layout.operator(AddonOperator.bl_idname, text="Get sizes")
 
-def register():
-    bpy.utils.register_class(AddonPanel)
-
-def unregister():
-    bpy.utils.unregister_class(AddonPanel)

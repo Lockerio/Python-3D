@@ -1,20 +1,21 @@
 import bpy
+import json
 
-from .parser import Parser
+from .data_parser import Parser
+from .manager import DataManager
 
 class AddonOperator(bpy.types.Operator):
     bl_idname = "wm.addon_operator"
     bl_label = "Моя кнопка"
 
     def execute(self, context):
-        all_objects = bpy.data.objects
-        mesh_objects = Parser.get_all_mesh_objects(all_objects)
-        # objects_parameters = Parser.get_parameters_as_dict(mesh_objects)
-        Parser.get_parameters_as_dict(mesh_objects)
-        return {'FINISHED'}
-    
-def register():
-    bpy.utils.register_class(AddonOperator)
+        visible_objects = [obj for obj in bpy.context.visible_objects if obj.type == 'MESH']
 
-def unregister():
-    bpy.utils.unregister_class(AddonOperator)
+        data = {}
+        for obj in visible_objects:
+            parameters = Parser.get_objects_parameters_as_dict(obj)
+            if parameters:
+                data[obj.name] = parameters
+
+        DataManager.save_objects_parameters_to_json(data, "1.json")
+        return {'FINISHED'}
